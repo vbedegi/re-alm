@@ -1,5 +1,5 @@
 (defproject re-alm "0.1.0"
-  :description "FIXME: write description"
+  :description "An Elm Architecture experiment in ClojureScript"
   :url "https://github.com/vbedegi/re-alm"
   :license {:name "Eclipse Public License"
             :url  "http://www.eclipse.org/legal/epl-v10.html"}
