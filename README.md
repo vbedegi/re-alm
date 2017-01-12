@@ -9,6 +9,8 @@ An [Elm Architecture](https://guide.elm-lang.org/architecture/) experiment in Cl
 
 ## Usage
 
+[![Clojars Project](https://img.shields.io/clojars/v/re-alm.svg)](https://clojars.org/re-alm)
+
 ```clj
 (defn init-counter []
   0)
