@@ -11,7 +11,7 @@ An [Elm Architecture](https://guide.elm-lang.org/architecture/) experiment in Cl
 
 [![Clojars Project](https://img.shields.io/clojars/v/re-alm.svg)](https://clojars.org/re-alm)
 
-```clj
+```clojure
 (defn init-counter []
   0)
   
@@ -38,7 +38,7 @@ In the update function you get the actual model, and the message you should hand
 
 And finally, you got to bootstrap your app.
 
- ```clj
+ ```clojure
  (boot
    (.getElementById js/document "app")
    {:update #'update-counter
@@ -50,7 +50,7 @@ And finally, you got to bootstrap your app.
 
 The result of the update function can be the new model, or possibly some side effects attached to it.
 
-```clj
+```clojure
 (defn update [model msg]
   (match msg
          :go-and-fetch-some-data
@@ -69,7 +69,7 @@ The result of the update function can be the new model, or possibly some side ef
 
 Every time the model changes, the optionally provided `subscriptions` function is called, where you can describe what external events you are interested in.
 
-```clj
+```clojure
 (defn update-foo [model msg]
   (match msg
     [:tick _]
