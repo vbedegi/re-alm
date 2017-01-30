@@ -245,3 +245,6 @@
   (if render
     (render model dispatch)
     (log "no render fn provided!")))
+
+(defn identify [component]
+  (:id component))
