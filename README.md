@@ -84,7 +84,36 @@ Every time the model changes, the optionally provided `subscriptions` function i
    :subscriptions #'subscriptions})
 ```
 
-Parent/children communication example: TODO
+Parent/children communication example
+
+```clojure
+; TODO
+```
+
+Using websockets
+
+```clojure
+(defn- update-ws [model msg]
+  (match msg
+         :send-msg
+         (ra/with-fx
+           model
+           (ws/websocket-fx "/ws" "payload"))
+
+         [:ws m]
+         (update-in model [:messages] conj m)
+
+         _
+         model))
+
+(defn- subscriptions [model]
+  [(ws/websocket "/ws" :ws)])
+
+(def ws-controller
+  {:render        #'render-ws
+   :update        #'update-ws
+   :subscriptions #'subscriptions})
+```
 
 ## License
 
