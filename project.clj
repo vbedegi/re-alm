@@ -8,7 +8,8 @@
                  [reagent "0.6.0"]
                  [re-frame "0.7.0"]
                  [cljs-ajax "0.5.8"]
-                 [jarohen/chord "0.7.0"]]
+                 [jarohen/chord "0.7.0"]
+                 [alandipert/storage-atom "2.0.1"]]
 
   :plugins [[lein-cljsbuild "1.1.4"]]
 
