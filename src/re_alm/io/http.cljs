@@ -1,8 +1,19 @@
 (ns re-alm.io.http
   (:require-macros [cljs.core.async.macros :refer [go]]
                    [reagent.ratom :refer [reaction]])
-  (:require [ajax.core :as ajax]
+  (:require [cljs.core.async :as async]
+            [ajax.core :as ajax]
             [re-alm.core :as ra]))
+
+(defn GET [url options]
+  (let [response-ch (async/chan)
+        http-options {:params          (:params options)
+                      :response-format (ajax/json-response-format {:keywords? true})
+                      :handler         (fn [resp]
+                                         (async/put! response-ch resp))}]
+    (ajax/GET url http-options)
+
+    response-ch))
 
 (defrecord GetFx [url options done fail]
   ra/IEffect
