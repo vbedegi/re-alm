@@ -58,8 +58,10 @@
   (extract-model [this] model)
   (extract-effects [this] effects))
 
-(defn with-fx [model & effects]
-  (->ResultWithEffects model effects))
+(defn with-fx [update-result & effects]
+  (->ResultWithEffects
+    (extract-model update-result)
+    (concat (extract-effects update-result) effects)))
 
 ; lens
 
@@ -232,9 +234,11 @@
           (assoc-in [component-key :model] model)
           (assoc :re-alm/event-manager event-manager')))))
 
-(defn tag-dispatch [dispatch tagger]
+(defn -tag-dispatch [dispatch tagger]
   (fn [msg]
     (->> msg (tag tagger) dispatch)))
+
+(def tag-dispatch (memoize -tag-dispatch))
 
 (defn make-component [template model]
   (assoc template
@@ -243,7 +247,7 @@
 
 (defn render-component [{:keys [render model]} dispatch]
   (if render
-    (render model dispatch)
+    [render model dispatch]
     (log "no render fn provided!")))
 
 (defn identify [component]

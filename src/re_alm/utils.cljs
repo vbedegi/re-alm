@@ -1,9 +1,8 @@
 (ns re-alm.utils
   (:require [clojure.set :as s]))
 
-(defn log [message]
-  (.log js/console message)
-  message)
+(defn log [& messages]
+  (apply println messages))
 
 (defn conj-in [m ks v]
   (update-in m ks #(conj % v)))

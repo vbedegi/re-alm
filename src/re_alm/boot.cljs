@@ -25,7 +25,7 @@
 
 (defn- app-view []
   (let [root-component (rf/subscribe [:re-alm/root-component])]
-    (ra/render-component @root-component dispatch)))
+    [ra/render-component @root-component dispatch]))
 
 (def ^{:dynamic true} *renderer* (fn []))
 
