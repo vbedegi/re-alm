@@ -18,11 +18,10 @@
 (defrecord GetFx [url options done fail]
   ra/IEffect
   (execute [this dispatch]
-    (let [http-options {:params          (:params options)
-                        :response-format (ajax/json-response-format {:keywords? true})
-                        :handler         (fn [resp]
-                                           (->> resp (ra/build-msg done) dispatch))}]
-      (ajax/GET url http-options)))
+    (go
+      (let [resp (async/<! (GET url options))
+            msg (ra/build-msg done resp)]
+        (dispatch msg))))
   ra/ITaggable
   (tag-it [this tagger]
     (-> this
