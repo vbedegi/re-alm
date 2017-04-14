@@ -3,11 +3,11 @@
   :url "https://github.com/vbedegi/re-alm"
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [org.clojure/clojurescript "1.9.495"]
+                 [org.clojure/clojurescript "1.9.518"]
                  [org.clojure/core.async "0.3.442"]
                  [reagent "0.6.1"]
                  [re-frame "0.7.0"]
-                 [cljs-ajax "0.5.8"]
+                 [cljs-ajax "0.5.9"]
                  [jarohen/chord "0.8.1"]
                  [alandipert/storage-atom "2.0.1"]]
 
