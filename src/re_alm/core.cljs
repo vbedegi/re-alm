@@ -115,9 +115,9 @@
 
 ;; ---
 
-(defn- get-subscriptions [component model]
-  (if-let [subscriptions-fn (:subscriptions component)]
-    (->> (subscriptions-fn model) (remove nil?) vec)
+(defn- get-subscriptions [subscriptions-fn model]
+  (if subscriptions-fn
+    (->> model subscriptions-fn (remove nil?) vec)
     []))
 
 (defn dispatch-to-subscribers [dispatch subscribers payload]
@@ -208,13 +208,6 @@
       (log "!! missed forward !!")
       model)))
 
-(defn- process-msg [component msg]
-  (let [model (:model component)
-        update-fn (:update component)
-        [model effects] (step update-fn model msg nil)
-        subscriptions (get-subscriptions component model)]
-    [model effects subscriptions]))
-
 (def SEND-MESSAGE :re-alm/send)
 
 (defn make-dispatcher [component-key]
@@ -224,10 +217,10 @@
 (rf/register-handler
   SEND-MESSAGE
   (fn [db [_ component-key msg]]
-    (log msg)
-    (let [component (get db component-key)
-          [model effects subscriptions] (process-msg component msg)
-          event-manager (-> db :re-alm/event-manager)
+    (let [handler (get db :re-alm/handler)
+          component (get db component-key)
+          [model effects subscriptions] (handler component msg)
+          event-manager (get db :re-alm/event-manager)
           event-manager' (set-subs event-manager subscriptions)]
       (execute-effects effects (make-dispatcher component-key))
       (-> db
@@ -252,3 +245,16 @@
 
 (defn identify [component]
   (:id component))
+
+(defn handler [{model            :model
+                update-fn        :update
+                subscriptions-fn :subscriptions}
+               msg]
+  (let [[model effects] (step update-fn model msg nil)
+        subscriptions (get-subscriptions subscriptions-fn model)]
+    [model effects subscriptions]))
+
+(defn wrap-log [handler]
+  (fn [component msg]
+    (.log js/console msg)
+    (handler component msg)))

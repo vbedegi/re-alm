@@ -6,16 +6,14 @@
 
 (def dispatch (ra/make-dispatcher :re-alm/root-component))
 
-(def default-db {})
-
 (rf/register-handler
   :re-alm/init
-  (fn [db [_ root-component]]
-    (assoc default-db
-      :re-alm/root-component root-component
-      :re-alm/event-manager (ra/set-subs
+  (fn [db [_ root-component handler]]
+    {:re-alm/root-component root-component
+     :re-alm/event-manager  (ra/set-subs
                               (ra/->EventManager dispatch)
-                              (ra/get-subscriptions root-component (:model root-component))))))
+                              (ra/get-subscriptions root-component (:model root-component)))
+     :re-alm/handler        handler}))
 
 (rf/register-sub
   :re-alm/root-component
@@ -32,7 +30,10 @@
 (defn render []
   (*renderer*))
 
-(defn boot [container component model]
-  (rf/dispatch-sync [:re-alm/init (assoc component :model model)])
-  (set! *renderer* #(r/render [app-view] container))
-  (render))
+(defn boot
+  ([container component model]
+   (boot container component model ra/handler))
+  ([container component model handler]
+   (rf/dispatch-sync [:re-alm/init (assoc component :model model) handler])
+   (set! *renderer* #(r/render [app-view] container))
+   (render)))
