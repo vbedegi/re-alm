@@ -1,6 +1,5 @@
 (ns re-alm.io.storage
-  (:require-macros [cljs.core.async.macros :refer [go]]
-                   [cljs.core.match :refer [match]])
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [clojure.set :as set]
             [cljs.core.async :as async :refer [put!]]
             [alandipert.storage-atom :refer [local-storage]]
