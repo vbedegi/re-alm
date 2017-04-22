@@ -84,6 +84,22 @@ Every time the model changes, the optionally provided `subscriptions` function i
    :subscriptions #'subscriptions})
 ```
 
+Middlewares are following the concept you may already know from Ring. The middleware function takes a component (the root component of your app), and the message being dispatched. It returns a tuple (vector) of the new version of the model, the side effects made during the update, and the subscriptions your model currently interested in.
+
+```clojure
+(defn wrap-log [handler]
+  (fn [component msg]
+    (.log js/console msg)
+    (handler component msg)))
+
+(boot
+   (.getElementById js/document "app")
+   component
+   model
+   (-> ra/handler
+       ra/wrap-log))
+```
+
 Parent/children communication example
 
 ```clojure
