@@ -9,19 +9,31 @@
     (events/listen el type #(put! out %))
     out))
 
-(def ^private key-name {13 :enter
-                        27 :escape
-                        32 :space
-                        33 :pageup
-                        34 :pagedown
-                        35 :end
-                        36 :home
-                        38 :up
-                        40 :down
-                        37 :left
-                        39 :right
-                        45 :insert
-                        46 :delete})
+(def ^private key-name {13  :enter
+                        27  :escape
+                        32  :space
+                        33  :pageup
+                        34  :pagedown
+                        35  :end
+                        36  :home
+                        38  :up
+                        40  :down
+                        37  :left
+                        39  :right
+                        45  :insert
+                        46  :delete
+                        112 :f1
+                        113 :f2
+                        114 :f3
+                        115 :f4
+                        116 :f5
+                        117 :f6
+                        118 :f7
+                        119 :f8
+                        120 :f9
+                        121 :f10
+                        122 :f11
+                        123 :f12})
 
 (defn- should-process? [key-event {:keys [key] :as args}]
   (let [target (.-target key-event)
