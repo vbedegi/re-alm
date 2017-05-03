@@ -47,11 +47,11 @@
 (defn storage [path msg]
   (ra/subscription (->LocalStorageWatch path) msg))
 
-(defrecord StorageFx [path value]
+(defrecord WriteStorageFx [path value]
   ra/IEffect
   (execute [this dispatch]
     (let [storage-atom (get-or-create-localstorage-atom path)]
       (reset! storage-atom value))))
 
-(defn storage-fx [path value]
-  (->StorageFx path value))
+(defn write-storage-fx [path value]
+  (->WriteStorageFx path value))
