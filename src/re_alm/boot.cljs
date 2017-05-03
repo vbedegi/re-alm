@@ -12,7 +12,7 @@
     {:re-alm/root-component root-component
      :re-alm/event-manager  (ra/set-subs
                               (ra/->EventManager dispatch)
-                              (ra/get-subscriptions root-component (:model root-component)))
+                              (ra/get-subscriptions (:subscriptions root-component) (:model root-component)))
      :re-alm/handler        handler}))
 
 (rf/register-sub
