@@ -61,7 +61,7 @@
 (defn with-fx [update-result & effects]
   (->ResultWithEffects
     (extract-model update-result)
-    (concat (extract-effects update-result) effects)))
+    (concat (extract-effects update-result) (remove nil? effects))))
 
 ; lens
 
