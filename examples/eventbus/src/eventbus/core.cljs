@@ -28,7 +28,8 @@
                                reverse
                                (take 10))]
       [:ul
-       (for [message recent-messages]
+       (for [[idx message] (make-indexed recent-messages)]
+         ^{:key idx}
          [:li (str (:sender message) " said: " (:message message))])])]])
 
 (defn update-participant [model msg]
@@ -64,6 +65,7 @@
     [:button.btn.btn-default {:on-click #(dispatch :remove-participant)} "remove participant"]]
    [:div
     (for [[idx participant] (make-indexed (:participants model))]
+      ^{:key idx}
       [:div {:style {:float  "left"
                      :width  "250px"
                      :margin "2px"}}
@@ -85,11 +87,6 @@
            (if (pos? cnt)
              (update model :participants #(vec (drop-last %)))
              model))
-
-         [:someone-said-something x]
-         (do
-           (.log js/console x)
-           model)
 
          _
          model))
