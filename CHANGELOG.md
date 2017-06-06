@@ -4,3 +4,4 @@ All notable changes to this project will be documented in this file. This change
 ## [0.2.2-SNAPSHOT]
 ### Added
 - Eventbus - publishing and listening to messages, through topics
+- DataStore - reading and writing to a global datastore, with notifications
