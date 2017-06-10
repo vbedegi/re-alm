@@ -1,8 +1,8 @@
 (ns re-alm.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :as async]
-            [re-alm.utils :refer [log conj-in update-vals diff-maps]]
-            [re-frame.core :as rf]))
+            [reagent.core :as r]
+            [re-alm.utils :refer [log conj-in update-vals diff-maps]]))
 
 ; tagging
 
@@ -37,7 +37,6 @@
 
 (defn build-msg [taggers payload]
   (reduce (fn [payload tagger]
-            #_(println (str "applying tagger " tagger))
             (tag tagger payload))
           payload
           taggers))
@@ -208,25 +207,6 @@
       (log "!! missed forward !!")
       model)))
 
-(def SEND-MESSAGE :re-alm/send)
-
-(defn make-dispatcher [component-key]
-  (fn [msg]
-    (rf/dispatch [SEND-MESSAGE component-key msg])))
-
-(rf/register-handler
-  SEND-MESSAGE
-  (fn [db [_ component-key msg]]
-    (let [handler (get db :re-alm/handler)
-          component (get db component-key)
-          [model effects subscriptions] (handler component msg)
-          event-manager (get db :re-alm/event-manager)
-          event-manager' (set-subs event-manager subscriptions)]
-      (execute-effects effects (make-dispatcher component-key))
-      (-> db
-          (assoc-in [component-key :model] model)
-          (assoc :re-alm/event-manager event-manager')))))
-
 (defn -tag-dispatch [dispatch tagger]
   (fn [msg]
     (->> msg (tag tagger) dispatch)))
@@ -258,3 +238,36 @@
   (fn [component msg]
     (.log js/console msg)
     (handler component msg)))
+
+; ---
+
+(defn make-app [handler component]
+  (let [dispatch-ch (async/chan)]
+    {:control-ch  (async/chan)
+     :dispatch-ch dispatch-ch
+     :handler     handler
+     :component   (r/atom component)
+     :dispatch    (fn [msg]
+                    (go
+                      (async/>! dispatch-ch msg)))}))
+
+(defn run-app [{:keys [control-ch dispatch-ch component dispatch] :as app}]
+  (let [event-manager (set-subs
+                        (->EventManager dispatch)
+                        (get-subscriptions (:subscriptions @component) (:model @component)))]
+    (go
+      (loop [app app
+             event-manager event-manager]
+        (let [[msg ch] (async/alts! [control-ch dispatch-ch])]
+          (if (= ch control-ch)
+            (recur app event-manager)
+            (let [handler (:handler app)
+                  component (:component app)
+                  component-v @component
+                  [model effects subscriptions] (handler component-v msg)
+                  component-v' (assoc component-v :model model)
+                  _ (when (not= component-v component-v')
+                      (reset! component component-v'))
+                  event-manager' (set-subs event-manager subscriptions)]
+              (execute-effects effects dispatch)
+              (recur app event-manager'))))))))
