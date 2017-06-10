@@ -135,7 +135,6 @@ Using websockets
 
 - the effets (http, ws, storage) may go into a separate package
 - the boot process is a mess, needs some cleanup
-- going independent of re-frame?
 
 ## License
 
