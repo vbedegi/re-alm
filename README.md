@@ -1,6 +1,6 @@
 # re-alm
 
-An [Elm Architecture](https://guide.elm-lang.org/architecture/) experiment in ClojureScript, powered by [Reagent](http://reagent-project.github.io/) and [re-frame](https://github.com/Day8/re-frame).
+An [Elm Architecture](https://guide.elm-lang.org/architecture/) experiment in ClojureScript, powered by [Reagent](http://reagent-project.github.io/)
  
 ## Why?
 
