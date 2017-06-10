@@ -1,5 +1,4 @@
 (ns re-alm.boot
-  (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as r]
             [re-alm.core :as ra]))
 
