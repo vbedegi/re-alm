@@ -241,14 +241,17 @@
 
 ; ---
 
+(defn- make-dispatch [ch]
+  (fn [msg]
+    (go
+      (async/>! ch msg))))
+
 (defn make-app [handler component]
   (let [dispatch-ch (async/chan)]
     {:dispatch-ch dispatch-ch
      :handler     handler
      :component   (r/atom component)
-     :dispatch    (fn [msg]
-                    (go
-                      (async/>! dispatch-ch msg)))}))
+     :dispatch    (make-dispatch dispatch-ch)}))
 
 (defn run-app [{:keys [dispatch-ch component dispatch] :as app}]
   (let [event-manager (set-subs
