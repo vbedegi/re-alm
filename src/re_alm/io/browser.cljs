@@ -1,4 +1,4 @@
-(ns re-alm.io.dom
+(ns re-alm.io.browser
   (:require [re-alm.core :as ra]))
 
 (defrecord FocusFx [selector]
