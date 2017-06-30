@@ -4,8 +4,7 @@ An [Elm Architecture](https://guide.elm-lang.org/architecture/) experiment in Cl
  
 ## Why?
 
-- You want a ~~easy~~ simple way to have local state, and parent/children relation between components.
-- You want to have pure message handler functions, and put side effects somewhere else (note, this project was started back when there were no notion of effects in re-frame. It is still based on 0.7.0)
+You want to build SPAs the simplest way possible, using nothing, but pure, composable functions.
 
 ## Usage
 
