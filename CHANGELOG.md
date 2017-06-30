@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This change
 
 ### Changed
 - renamed `dom` namespace to `browser`
+- updated dependencies
 
 ## [0.3.0]
 ### Added
