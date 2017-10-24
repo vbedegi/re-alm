@@ -21,7 +21,7 @@
     (.setPathPrefix (str js/window.location.protocol
                          "//"
                          js/window.location.host))
-    (.setUseFragment false)))
+    (.setUseFragment true)))
 
 (defonce ^:private history (doto
                              (make-history)
