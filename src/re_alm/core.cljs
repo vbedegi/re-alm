@@ -213,10 +213,12 @@
 
 (def tag-dispatch (memoize -tag-dispatch))
 
+(def component-id (atom 0))
+
 (defn make-component [template model]
   (assoc template
     :model model
-    :id (str (random-uuid))))
+    :id (str (swap! component-id inc))))
 
 (defn render-component [{:keys [render model]} dispatch]
   (if render
