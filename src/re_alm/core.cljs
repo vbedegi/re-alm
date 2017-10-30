@@ -92,6 +92,14 @@
 (defn delegate-lens [read-fn write-fn]
   (->DelegateLens read-fn write-fn))
 
+;
+
+(defn ok [value]
+  {:ok value})
+
+(defn error [error]
+  {:error error})
+
 ; effect
 
 (defprotocol IEffect

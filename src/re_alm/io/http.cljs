@@ -10,12 +10,13 @@
         http-options {:params          (:params options)
                       :response-format (ajax/json-response-format {:keywords? true})
                       :handler         (fn [resp]
-                                         (async/put! response-ch resp))}]
+                                         (async/put! response-ch (ra/ok resp)))
+                      :error-handler   (fn [error]
+                                         (async/put! response-ch (ra/error error)))}]
     (ajax/GET url http-options)
-
     response-ch))
 
-(defrecord GetFx [url options done fail]
+(defrecord GetFx [url options done]
   ra/IEffect
   (execute [this dispatch]
     (go
@@ -24,14 +25,10 @@
         (dispatch msg))))
   ra/ITaggable
   (tag-it [this tagger]
-    (-> this
-        (cond-> done
-                (update :done conj tagger))
-        (cond-> fail
-                (update :fail conj tagger)))))
+    (update this :done conj tagger)))
 
 (defn get-fx
   ([url done]
    (get-fx url {} done))
   ([url options done]
-   (->GetFx url options [done] nil)))
+   (->GetFx url options [done])))
