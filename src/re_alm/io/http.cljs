@@ -16,6 +16,18 @@
     (ajax/GET url http-options)
     response-ch))
 
+(defn POST [url options]
+  (let [response-ch (async/chan)
+        http-options {:params          (:params options)
+                      :format          (ajax/json-request-format)
+                      :response-format (ajax/json-response-format {:keywords? true})
+                      :handler         (fn [resp]
+                                         (async/put! response-ch (ra/ok resp)))
+                      :error-handler   (fn [error]
+                                         (async/put! response-ch (ra/error error)))}]
+    (ajax/POST url http-options)
+    response-ch))
+
 (defrecord GetFx [url options done]
   ra/IEffect
   (execute [this dispatch]
@@ -32,3 +44,20 @@
    (get-fx url {} done))
   ([url options done]
    (->GetFx url options [done])))
+
+(defrecord PostFx [url options done]
+  ra/IEffect
+  (execute [this dispatch]
+    (go
+      (let [resp (async/<! (POST url options))
+            msg (ra/build-msg done resp)]
+        (dispatch msg))))
+  ra/ITaggable
+  (tag-it [this tagger]
+    (update this :done conj tagger)))
+
+(defn post-fx
+  ([url done]
+   (post-fx url {} done))
+  ([url options done]
+   (->PostFx url options [done])))
