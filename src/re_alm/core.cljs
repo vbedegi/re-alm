@@ -109,16 +109,24 @@
   (doseq [effect effects]
     (execute effect dispatch)))
 
-(defrecord DispatchFx [msg taggers]
+(defrecord DispatchFx [msg options taggers]
   IEffect
   (execute [this dispatch]
-    (dispatch (build-msg taggers msg)))
+    (let [message (build-msg taggers msg)]
+      (if-let [delay (:delay options)]
+        (go
+          (async/<! (async/timeout delay))
+          (dispatch message))
+        (dispatch message))))
   ITaggable
   (tag-it [this tagger]
     (update this :taggers conj tagger)))
 
-(defn dispatch-fx [msg]
-  (->DispatchFx msg []))
+(defn dispatch-fx
+  ([msg]
+   (dispatch-fx msg {}))
+  ([msg options]
+   (->DispatchFx msg options [])))
 
 ;; ---
 
