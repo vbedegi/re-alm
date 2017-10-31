@@ -57,7 +57,7 @@ The result of the update function can be the new model, or possibly some side ef
            (assoc model :loading? true)
            (http/get-fx "/url" {:params {:foo :bar}} :fetch-done))
 
-         [:fetch-done data]
+         [:fetch-done {:ok data}]
          (assoc model
                 :loading? false
                 :data data)
