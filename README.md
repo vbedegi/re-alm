@@ -115,14 +115,14 @@ Using websockets
            model
            (ws/websocket-fx "/ws" "payload"))
 
-         [:ws m]
+         [:message-from-ws m]
          (update-in model [:messages] conj m)
 
          _
          model))
 
 (defn- subscriptions [model]
-  [(ws/websocket "/ws" :ws)])
+  [(ws/websocket "/ws" :message-from-ws)])
 
 (def ws-controller
   {:render        #'render-ws
