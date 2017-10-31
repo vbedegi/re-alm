@@ -1,7 +1,16 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
-## [0.3.1-SNAPSHOT]
+## [0.3.2]
+### Added
+- add new effects: http/post-fx and http/open-url-fx
+- add delay option to dispatch-fx
+
+### Changed
+- effects that may fail, such as http/get-fx, will wrap the result in a map like {:ok response} or {:error error}
+- updated dependencies
+
+## [0.3.1]
 ### Added
 - `navigate-fx` and `navigate` subscription
 
