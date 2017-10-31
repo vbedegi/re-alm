@@ -54,3 +54,11 @@
 
 (defn navigate [msg]
   (ra/subscription (->Navigate) msg))
+
+(defrecord OpenUrlFx [url]
+  ra/IEffect
+  (execute [this dispatch]
+    (.open js/window url "_blank")))
+
+(defn open-url-fx [url]
+  (->OpenUrlFx url))
