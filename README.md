@@ -10,6 +10,10 @@ You want to build SPAs the simplest way possible, using nothing, but pure, compo
 
 [![Clojars Project](https://img.shields.io/clojars/v/re-alm.svg)](https://clojars.org/re-alm)
 
+Start a new project: `lein new re-alm my-project`
+
+
+
 ```clojure
 (defn init-counter []
   0)
