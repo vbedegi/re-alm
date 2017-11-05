@@ -41,17 +41,14 @@
 (defn datastore [key msg]
   (ra/subscription (->DatastoreWatch key) msg))
 
-(defrecord ReadStoreFx [key taggers]
+(defrecord ReadStoreFx [key message]
   ra/IEffect
   (execute [this dispatch]
     (let [value (get-datastore-value key)]
-      (dispatch (ra/build-msg taggers value))))
-  ra/ITaggable
-  (tag-it [this tagger]
-    (update this :taggers conj tagger)))
+      (dispatch (ra/build-msg this message value)))))
 
-(defn read-store-fx [key done]
-  (->ReadStoreFx key [done]))
+(defn read-store-fx [key message]
+  (->ReadStoreFx key message))
 
 (defrecord WriteStoreFx [key value]
   ra/IEffect
@@ -61,4 +58,3 @@
 
 (defn write-store-fx [key value]
   (->WriteStoreFx key value))
-

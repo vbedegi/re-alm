@@ -1,6 +1,6 @@
 (ns re-alm.io.eventbus
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [cljs.core.async :as async :refer [chan <! >! close!]]
+  (:require [cljs.core.async :as async ]
             [re-alm.core :as ra]))
 
 (def events-ch-by-topic (atom {}))
@@ -10,13 +10,13 @@
     (swap! events-ch-by-topic (fn [chs]
                                 (if (get chs topic)
                                   chs
-                                  (assoc chs topic (chan)))))
+                                  (assoc chs topic (async/chan)))))
     topic))
 
 (defn- remove-events-ch [topic]
   (swap! events-ch-by-topic (fn [chs]
                               (when-let [ch (get chs topic)]
-                                (close! ch)
+                                (async/close! ch)
                                 (dissoc chs topic)))))
 
 (defrecord Events [topic]
@@ -45,7 +45,7 @@
   (execute [this dispatch]
     (when-let [events-ch (get @events-ch-by-topic topic)]
       (go
-        (>! events-ch payload)))))
+        (async/>! events-ch payload)))))
 
 (defn publish-fx [topic payload]
   (->PublishFx topic payload))

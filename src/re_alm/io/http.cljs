@@ -28,36 +28,30 @@
     (ajax/POST url http-options)
     response-ch))
 
-(defrecord GetFx [url options done]
+(defrecord GetFx [url options message]
   ra/IEffect
   (execute [this dispatch]
     (go
       (let [resp (async/<! (GET url options))
-            msg (ra/build-msg done resp)]
-        (dispatch msg))))
-  ra/ITaggable
-  (tag-it [this tagger]
-    (update this :done conj tagger)))
+            msg (ra/build-msg this message resp)]
+        (dispatch msg)))))
 
 (defn get-fx
-  ([url done]
-   (get-fx url {} done))
-  ([url options done]
-   (->GetFx url options [done])))
+  ([url message]
+   (get-fx url {} message))
+  ([url options message]
+   (->GetFx url options message)))
 
-(defrecord PostFx [url options done]
+(defrecord PostFx [url options message]
   ra/IEffect
   (execute [this dispatch]
     (go
       (let [resp (async/<! (POST url options))
-            msg (ra/build-msg done resp)]
-        (dispatch msg))))
-  ra/ITaggable
-  (tag-it [this tagger]
-    (update this :done conj tagger)))
+            msg (ra/build-msg this message resp)]
+        (dispatch msg)))))
 
 (defn post-fx
-  ([url done]
-   (post-fx url {} done))
-  ([url options done]
-   (->PostFx url options [done])))
+  ([url message]
+   (post-fx url {} message))
+  ([url options message]
+   (->PostFx url options message)))

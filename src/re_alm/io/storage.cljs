@@ -47,17 +47,14 @@
 (defn storage [path msg]
   (ra/subscription (->LocalStorageWatch path) msg))
 
-(defrecord ReadStorageFx [path taggers]
+(defrecord ReadStorageFx [path message]
   ra/IEffect
   (execute [this dispatch]
     (let [atom (get-or-create-localstorage-atom path)]
-      (dispatch (ra/build-msg taggers @atom))))
-  ra/ITaggable
-  (tag-it [this tagger]
-    (update this :taggers conj tagger)))
+      (dispatch (ra/build-msg this message @atom)))))
 
-(defn read-storage-fx [path done]
-  (->ReadStorageFx path [done]))
+(defn read-storage-fx [path message]
+  (->ReadStorageFx path message))
 
 (defrecord WriteStorageFx [path value]
   ra/IEffect

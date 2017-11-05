@@ -27,19 +27,25 @@
   (fn [value]
     (tag tagger value)))
 
-(defprotocol ITaggable
-  (tag-it [this tagger]))
+(defn taggers [x]
+  (when (associative? x)
+    (get x :re-alm/taggers [])))
 
-(extend-type default
-  ITaggable
-  (tag-it [this tagger]
-    this))
+(defn add-tagger [x tagger]
+  (if (associative? x)
+    (assoc x :re-alm/taggers (conj (taggers x) tagger))
+    x))
 
-(defn build-msg [taggers payload]
-  (reduce (fn [payload tagger]
-            (tag tagger payload))
-          payload
-          taggers))
+(defn build-msg
+  ([taggers payload]
+   (let [message
+         (reduce (fn [payload tagger]
+                   (tag tagger payload))
+                 payload
+                 taggers)]
+     message))
+  ([taggable message payload]
+   (build-msg (into [message] (taggers taggable)) payload)))
 
 ; update result
 
@@ -109,24 +115,21 @@
   (doseq [effect effects]
     (execute effect dispatch)))
 
-(defrecord DispatchFx [msg options taggers]
+(defrecord DispatchFx [msg options]
   IEffect
   (execute [this dispatch]
-    (let [message (build-msg taggers msg)]
+    (let [message (build-msg (taggers this) msg)]
       (if-let [delay (:delay options)]
         (go
           (async/<! (async/timeout delay))
           (dispatch message))
-        (dispatch message))))
-  ITaggable
-  (tag-it [this tagger]
-    (update this :taggers conj tagger)))
+        (dispatch message)))))
 
 (defn dispatch-fx
   ([msg]
    (dispatch-fx msg {}))
   ([msg options]
-   (->DispatchFx msg options [])))
+   (->DispatchFx msg options)))
 
 ;; ---
 
@@ -137,21 +140,16 @@
 
 (defn dispatch-to-subscribers [dispatch subscribers payload]
   (doseq [subscriber subscribers]
+    ;(.log js/console subscriber)
     (->> payload (build-msg subscriber) dispatch)))
 
 (defprotocol ITopic
   (make-event-source [this dispatch subscribers]))
 
-(defprotocol ISubscription
-  (add-tagger [this tagger]))
+(defrecord Subscription [topic message])
 
-(defrecord Subscription [topic taggers]
-  ISubscription
-  (add-tagger [this tagger]
-    (update this :taggers conj tagger)))
-
-(defn subscription [topic msg]
-  (->Subscription topic [msg]))
+(defn subscription [topic message]
+  (->Subscription topic message))
 
 (defprotocol IEventManager
   (set-subs [this subs]))
@@ -162,7 +160,8 @@
     (let [old-subs-by-topic (get this :taggers-by-topic {})
           new-subs-by-topic (->> subs
                                  (group-by :topic)
-                                 (update-vals (fn [k v] (mapv :taggers v))))
+                                 (update-vals (fn [k v]
+                                                (mapv #(into [(:message %)] (taggers %)) v))))
           {missing-topics  :missing
            modified-topics :modified
            new-topics      :new
@@ -209,7 +208,7 @@
   (let [update-result (update-fn model msg)
         model' (extract-model update-result)
         effects (extract-effects update-result)
-        tagged-effects (mapv #(tag-it % msg-tagger) effects)]
+        tagged-effects (mapv #(add-tagger % msg-tagger) effects)]
     [model' tagged-effects]))
 
 (defn forward [model sub-model-lens sub-update-fn sub-msg msg-tagger]
