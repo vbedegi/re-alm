@@ -131,6 +131,35 @@
   ([msg options]
    (->DispatchFx msg options)))
 
+(defrecord FromChanFnFx [chan-fn message]
+  IEffect
+  (execute [this dispatch]
+    (go
+      (let [from-chan (async/<! (chan-fn dispatch))]
+        (->> from-chan
+             (build-msg this message)
+             dispatch)))))
+
+(defn from-chan-fn-fx [chan-fn message]
+  (->FromChanFnFx chan-fn message))
+
+(defrecord FromPromiseFnFx [promise-fn message]
+  IEffect
+  (execute [this dispatch]
+    (let [promise (promise-fn dispatch)]
+      (-> promise
+          (.then (fn [v]
+                   (->> (ok v)
+                        (build-msg this message)
+                        dispatch)))
+          (.catch (fn [e]
+                    (->> (error e)
+                         (build-msg this message)
+                         dispatch)))))))
+
+(defn from-promise-fn-fx [promise-fn message]
+  (->FromPromiseFnFx promise-fn message))
+
 ;; ---
 
 (defn- get-subscriptions [subscriptions-fn model]
