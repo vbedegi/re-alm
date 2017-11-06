@@ -1,4 +1,4 @@
-(defproject re-alm "0.3.3-SNAPSHOT"
+(defproject re-alm "0.3.3"
   :description "An Elm Architecture experiment in ClojureScript"
   :url "https://github.com/vbedegi/re-alm"
   :license {:name "MIT"}
@@ -9,14 +9,10 @@
                  [cljs-ajax "0.7.2"]
                  [jarohen/chord "0.8.1"]
                  [alandipert/storage-atom "2.0.1"]]
-
   :plugins [[lein-cljsbuild "1.1.4"]]
-
   :source-paths ["src"]
   :test-paths ["test"]
-
   :clean-targets ^{:protect false} ["run/compiled" "target" "test/js"]
-
   :cljsbuild {:builds [{:id           "dev"
                         :source-paths ["src"]
                         :compiler     {:output-to            "run/compiled/re-alm.js"
