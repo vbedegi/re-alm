@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.3.3]
+### Added
+- from-chan-fn-fx and from-promise-fn-fx generic effects
+
+### Changed
+- removed ITaggable, implementing IEffects got a bit easier (less boilerplate)
+
 ## [0.3.2]
 ### Added
 - add new effects: http/post-fx and http/open-url-fx
