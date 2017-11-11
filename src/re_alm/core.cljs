@@ -225,11 +225,16 @@
           (assoc :taggers-by-topic new-subs-by-topic)
           (assoc :event-sources-by-topic new-event-sources)))))
 
-(defn forward-subs [model sub-model-lens sub-subscribe-fn tagger]
-  (let [sub-model (read sub-model-lens model)
-        sub-subscriptions (->> (sub-subscribe-fn sub-model) (remove nil?))
-        sub-subscriptions' (map #(add-tagger % tagger) sub-subscriptions)]
-    sub-subscriptions'))
+(defn forward-subs
+  ([subscriptions tagger]
+   (map #(add-tagger % tagger) subscriptions))
+  ([model subscriptions-fn taggers]
+   (forward-subs
+     (->> (subscriptions-fn model) (remove nil?))
+     taggers))
+  ([model sub-model-lens sub-subscriptions-fn tagger]
+   (let [sub-model (read sub-model-lens model)]
+     (forward-subs sub-model sub-subscriptions-fn tagger))))
 
 ; ---
 
