@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.3.4]
+### Changed
+- forward-subs has more general forms
+
 ## [0.3.3]
 ### Added
 - from-chan-fn-fx and from-promise-fn-fx generic effects
