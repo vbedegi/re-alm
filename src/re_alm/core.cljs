@@ -162,10 +162,13 @@
 
 ;; ---
 
-(defn- get-subscriptions [subscriptions-fn model]
-  (if subscriptions-fn
-    (->> model subscriptions-fn (remove nil?) vec)
-    []))
+(defn- get-subscriptions
+  ([component]
+   (get-subscriptions (:subscriptions component) (:model component)))
+  ([subscriptions-fn model]
+   (if subscriptions-fn
+     (->> model subscriptions-fn (remove nil?) vec)
+     [])))
 
 (defn dispatch-to-subscribers [dispatch subscribers payload]
   (doseq [subscriber subscribers]
@@ -277,18 +280,40 @@
 (defn identify [component]
   (:id component))
 
-(defn handler [{model            :model
-                update-fn        :update
-                subscriptions-fn :subscriptions}
-               msg]
-  (let [[model effects] (step update-fn model msg nil)
-        subscriptions (get-subscriptions subscriptions-fn model)]
-    [model effects subscriptions]))
+(defn handler [component msg dispatch ctx]
+  (let [model (:model component)
+        update-fn (:update component)
+        [model' effects] (step update-fn model msg nil)
+        component' (if (= model model')
+                     component
+                     (assoc component :model model'))]
+    [component' (assoc ctx ::effects effects)]))
+
+(defn wrap-effect [handler]
+  (fn [component msg dispatch ctx]
+    (let [[component ctx] (handler component msg dispatch ctx)
+          effects (::effects ctx)]
+      (execute-effects effects dispatch)
+      [component (dissoc ctx ::effects)])))
+
+(defn wrap-subscriptions [handler]
+  (fn [component msg dispatch ctx]
+    (let [[component' ctx] (handler component msg dispatch ctx)
+          subscriptions (get-subscriptions component')
+          event-manager (or (::event-manager ctx)
+                            (->EventManager dispatch))
+          event-manager (set-subs event-manager subscriptions)]
+      [component' (assoc ctx ::event-manager event-manager)])))
 
 (defn wrap-log [handler]
-  (fn [component msg]
+  (fn [component msg dispatch ctx]
     (.log js/console msg)
-    (handler component msg)))
+    (handler component msg dispatch ctx)))
+
+(def default-handler
+  (-> handler
+      wrap-effect
+      wrap-subscriptions))
 
 ; ---
 
@@ -304,20 +329,12 @@
      :component   (r/atom component)
      :dispatch    (make-dispatch dispatch-ch)}))
 
-(defn run-app [{:keys [dispatch-ch component dispatch] :as app}]
-  (let [event-manager (set-subs
-                        (->EventManager dispatch)
-                        (get-subscriptions (:subscriptions @component) (:model @component)))]
-    (go
-      (loop [app app
-             event-manager event-manager]
-        (let [msg (async/<! dispatch-ch)]
-          (let [handler (:handler app)
-                component-v @component
-                [model effects subscriptions] (handler component-v msg)
-                component-v' (assoc component-v :model model)
-                _ (when (not= component-v component-v')
-                    (reset! component component-v'))
-                event-manager' (set-subs event-manager subscriptions)]
-            (execute-effects effects dispatch)
-            (recur app event-manager')))))))
+(defn run-app [{:keys [dispatch-ch component dispatch handler] :as app}]
+  (go
+    (loop [ctx {}]
+      (let [msg (async/<! dispatch-ch)
+            component-v @component
+            [component-v' ctx] (handler component-v msg dispatch ctx)]
+        (when (not= component-v component-v')
+          (reset! component component-v'))
+        (recur ctx)))))

@@ -12,7 +12,7 @@
 
 (defn boot
   ([container component model]
-   (boot container component model ra/handler))
+   (boot container component model ra/default-handler))
   ([container component model handler]
    (let [component (assoc component :model model)
          app (ra/make-app handler component)]
