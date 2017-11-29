@@ -4,9 +4,9 @@
   :license {:name "MIT"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.946"]
-                 [org.clojure/core.async "0.3.443"]
+                 [org.clojure/core.async "0.3.465"]
                  [reagent "0.7.0"]
-                 [cljs-ajax "0.7.2"]
+                 [cljs-ajax "0.7.3"]
                  [jarohen/chord "0.8.1"]
                  [alandipert/storage-atom "2.0.1"]]
   :plugins [[lein-cljsbuild "1.1.4"]]
