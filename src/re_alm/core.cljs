@@ -324,7 +324,7 @@
        (handler component message dispatch ctx)
        (catch js/Error e
          (when on-exception
-           (on-exception e))
+           (on-exception e message dispatch))
          [component ctx])))))
 
 ; ---
