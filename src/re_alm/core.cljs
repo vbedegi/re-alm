@@ -315,6 +315,18 @@
       wrap-effect
       wrap-subscriptions))
 
+(defn wrap-failsafe
+  ([handler]
+    (wrap-failsafe handler nil))
+  ([handler on-exception]
+   (fn [component message dispatch ctx]
+     (try
+       (handler component message dispatch ctx)
+       (catch js/Error e
+         (when on-exception
+           (on-exception e))
+         [component ctx])))))
+
 ; ---
 
 (defn- make-dispatch [ch]
