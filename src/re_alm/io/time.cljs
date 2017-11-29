@@ -20,3 +20,11 @@
 
 (defn every [interval msg]
   (ra/subscription (->Time interval) msg))
+
+(defrecord TimeCoFx []
+  ra/ICoEffect
+  (extract-value [this]
+    (js/Date.)))
+
+(defn time-cofx []
+  (->TimeCoFx))

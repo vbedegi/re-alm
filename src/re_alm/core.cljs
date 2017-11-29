@@ -160,6 +160,18 @@
 (defn from-promise-fn-fx [promise-fn message]
   (->FromPromiseFnFx promise-fn message))
 
+; coeffect
+
+(defprotocol ICoEffect
+  (extract-value [this]))
+
+(extend-protocol ICoEffect
+  default
+  (extract-value [this] this)
+  PersistentVector
+  (extract-value [this]
+    (mapv extract-value this)))
+
 ;; ---
 
 (defn- get-subscriptions
@@ -317,7 +329,7 @@
 
 (defn wrap-failsafe
   ([handler]
-    (wrap-failsafe handler nil))
+   (wrap-failsafe handler nil))
   ([handler on-exception]
    (fn [component message dispatch ctx]
      (try
@@ -326,6 +338,10 @@
          (when on-exception
            (on-exception e message dispatch))
          [component ctx])))))
+
+(defn wrap-coeffect [handler]
+  (fn [component msg dispatch ctx]
+    (handler component (extract-value msg) dispatch ctx)))
 
 ; ---
 
