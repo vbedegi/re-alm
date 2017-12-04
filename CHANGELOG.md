@@ -1,6 +1,13 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.3.5]
+### Added
+- coeffects
+
+### Changed
+- middleware functions got two additional parameters
+
 ## [0.3.4]
 ### Changed
 - forward-subs has more general forms
