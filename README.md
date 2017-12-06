@@ -1,14 +1,15 @@
 # re-alm
 
 An [Elm Architecture](https://guide.elm-lang.org/architecture/) experiment in ClojureScript, powered by [Reagent](http://reagent-project.github.io/)
+
+[![Clojars Project](https://img.shields.io/clojars/v/re-alm.svg)](https://clojars.org/re-alm)
+[![Dependencies Status](https://versions.deps.co/vbedegi/re-alm/status.svg)](https://versions.deps.co/vbedegi/re-alm) 
  
 ## Why?
 
 You want to build SPAs the simplest way possible, using nothing, but pure, composable functions.
 
 ## Usage
-
-[![Clojars Project](https://img.shields.io/clojars/v/re-alm.svg)](https://clojars.org/re-alm)
 
 Start a new project: `lein new re-alm my-project`
 
