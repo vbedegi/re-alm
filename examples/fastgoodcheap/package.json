@@ -1,0 +1,20 @@
+{
+  "name": "fastgoodcheap",
+  "version": "1.0.0",
+  "description": "FIXME: Write a one-line description of your library/project.",
+  "main": "index.js",
+  "scripts": {
+    "watch": "webpack -d --watch",
+    "build": "webpack -p"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react": "15.5.4",
+    "react-dom": "15.5.4",
+    "react-toggle": "^4.0.1"
+  },
+  "devDependencies": {
+    "webpack": "^3.10.0"
+  }
+}
