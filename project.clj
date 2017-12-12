@@ -1,4 +1,4 @@
-(defproject re-alm "0.3.5"
+(defproject re-alm "0.3.6-SNAPSHOT"
   :description "An Elm Architecture experiment in ClojureScript"
   :url "https://github.com/vbedegi/re-alm"
   :license {:name "MIT"}
