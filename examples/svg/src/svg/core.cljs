@@ -68,13 +68,11 @@
   (match msg
 
          [:tick v]
-         (do
-           (.log js/console "ZZ")
-           (let [[p1x p1y p2x p2y] (:pointers model)]
-             (assoc model :pointers [(+ p1x 1)
-                                     (+ p1y 2)
-                                     (+ p2x 3)
-                                     (+ p2y 4)])))
+         (let [[p1x p1y p2x p2y] (:pointers model)]
+              (assoc model :pointers [(+ p1x 1)
+                                      (+ p1y 2)
+                                      (+ p2x 3)
+                                      (+ p2y 4)]))
 
          _
          model))

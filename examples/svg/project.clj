@@ -11,7 +11,7 @@
                  [org.clojure/core.async  "0.3.442"
                   :exclusions [org.clojure/tools.reader]]
                  [org.clojure/core.match "0.3.0-alpha4"]
-                 [re-alm "0.2.1"]]
+                 [re-alm "0.3.6"]]
 
   :plugins [[lein-figwheel "0.5.10"]
             [lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
