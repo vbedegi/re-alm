@@ -308,15 +308,6 @@
       (execute-effects effects dispatch)
       [component (dissoc ctx ::effects)])))
 
-(defn wrap-subscriptions [handler]
-  (fn [component msg dispatch ctx]
-    (let [[component' ctx] (handler component msg dispatch ctx)
-          subscriptions (get-subscriptions component')
-          event-manager (or (::event-manager ctx)
-                            (->EventManager dispatch))
-          event-manager (set-subs event-manager subscriptions)]
-      [component' (assoc ctx ::event-manager event-manager)])))
-
 (defn wrap-log [handler]
   (fn [component msg dispatch ctx]
     (.log js/console msg)
@@ -324,8 +315,7 @@
 
 (def default-handler
   (-> handler
-      wrap-effect
-      wrap-subscriptions))
+      wrap-effect))
 
 (defn wrap-failsafe
   ([handler]
@@ -358,11 +348,22 @@
      :dispatch    (make-dispatch dispatch-ch)}))
 
 (defn run-app [{:keys [dispatch-ch component dispatch handler] :as app}]
-  (go
-    (loop [ctx {}]
-      (let [msg (async/<! dispatch-ch)
-            component-v @component
-            [component-v' ctx] (handler component-v msg dispatch ctx)]
-        (when (not= component-v component-v')
-          (reset! component component-v'))
-        (recur ctx)))))
+  (let [event-manager (set-subs
+                        (->EventManager dispatch)
+                        (get-subscriptions @component))]
+    (go
+      (loop [app app
+             event-manager event-manager
+             ctx {}]
+        (let [msg (async/<! dispatch-ch)
+              component-v @component
+              [component-v' ctx] (handler component-v msg dispatch ctx)
+              component-changed? (not= component-v component-v')
+              event-manager' (if component-changed?
+                               (let [subscriptions (get-subscriptions component-v')]
+                                 (set-subs event-manager subscriptions))
+                               event-manager)]
+          (when component-changed?
+            (reset! component component-v'))
+
+          (recur app event-manager' ctx))))))
