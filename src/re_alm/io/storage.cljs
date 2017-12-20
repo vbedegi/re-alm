@@ -64,3 +64,12 @@
 
 (defn write-storage-fx [path value]
   (->WriteStorageFx path value))
+
+(defrecord StorageCoFx [path]
+  ra/ICoEffect
+  (extract-value [this]
+    (let [atom (get-or-create-localstorage-atom path)]
+      @atom)))
+
+(defn storage-cofx [path]
+  (->StorageCoFx path))
