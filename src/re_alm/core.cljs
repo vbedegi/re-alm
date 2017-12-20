@@ -352,6 +352,9 @@
                         (->EventManager dispatch)
                         (get-subscriptions @component))]
     (go
+      (when-let [start-msg (:start @component)]
+        (dispatch start-msg))
+
       (loop [app app
              event-manager event-manager
              ctx {}]
