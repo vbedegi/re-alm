@@ -28,6 +28,19 @@
     (ajax/POST url http-options)
     response-ch))
 
+(defn DELETE [url options]
+  (let [response-ch (async/chan)
+        http-options {:params          (:params options)
+                      :format          (ajax/json-request-format)
+                      :response-format (ajax/json-response-format {:keywords? true})
+                      :handler         (fn [resp]
+                                         (async/put! response-ch (ra/ok resp)))
+                      :error-handler   (fn [error]
+                                         (async/put! response-ch (ra/error error)))}]
+    (ajax/DELETE url http-options)
+    response-ch))
+
+
 (defrecord GetFx [url options message]
   ra/IEffect
   (execute [this dispatch]
@@ -55,3 +68,17 @@
    (post-fx url {} message))
   ([url options message]
    (->PostFx url options message)))
+
+(defrecord DeleteFx [url options message]
+  ra/IEffect
+  (execute [this dispatch]
+    (go
+      (let [resp (async/<! (POST url options))
+            msg (ra/build-msg this message resp)]
+        (dispatch msg)))))
+
+(defn delete-fx
+  ([url message]
+   (delete-fx url {} message))
+  ([url options message]
+   (->DeleteFx url options message)))
