@@ -62,3 +62,11 @@
 
 (defn open-url-fx [url]
   (->OpenUrlFx url))
+
+(defrecord PathCoFx []
+  ra/ICoEffect
+  (extract-value [this]
+    (.getToken (Html5History.))))
+
+(defn path-cofx []
+  (->PathCoFx))
