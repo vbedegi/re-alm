@@ -8,6 +8,7 @@
 (defn GET [url options]
   (let [response-ch (async/chan)
         http-options {:params          (:params options)
+                      :headers         (:headers options)
                       :response-format (ajax/json-response-format {:keywords? true})
                       :handler         (fn [resp]
                                          (async/put! response-ch (ra/ok resp)))
@@ -19,6 +20,7 @@
 (defn POST [url options]
   (let [response-ch (async/chan)
         http-options {:params          (:params options)
+                      :headers         (:headers options)
                       :format          (ajax/json-request-format)
                       :response-format (ajax/json-response-format {:keywords? true})
                       :handler         (fn [resp]
@@ -31,6 +33,7 @@
 (defn DELETE [url options]
   (let [response-ch (async/chan)
         http-options {:params          (:params options)
+                      :headers         (:headers options)
                       :format          (ajax/json-request-format)
                       :response-format (ajax/json-response-format {:keywords? true})
                       :handler         (fn [resp]
