@@ -242,14 +242,24 @@
 
 (defn forward-subs
   ([subscriptions tagger]
-   (map #(add-tagger % tagger) subscriptions))
-  ([model subscriptions-fn taggers]
-   (forward-subs
-     (->> (subscriptions-fn model) (remove nil?))
-     taggers))
+   (mapv #(add-tagger % tagger) subscriptions))
+  ([model subscriptions-fn tagger]
+   (if subscriptions-fn
+     (forward-subs
+       (->> (subscriptions-fn model) (remove nil?))
+       tagger)
+     []))
   ([model sub-model-lens sub-subscriptions-fn tagger]
    (let [sub-model (read sub-model-lens model)]
      (forward-subs sub-model sub-subscriptions-fn tagger))))
+
+(defn forward-subs-to-component
+  ([model sub-component-lens tagger]
+   (if-let [sub-component (read sub-component-lens model)]
+     (let [sub-model (:model sub-component)
+           sub-subscriptions-fn (:subscriptions sub-component)]
+       (forward-subs sub-model sub-subscriptions-fn tagger))
+     [])))
 
 ; ---
 
@@ -262,7 +272,7 @@
 
 (defn forward [model sub-model-lens sub-update-fn sub-msg msg-tagger]
   (if-let [sub-model (read sub-model-lens model)]
-    (let [[sub-model' effects] (step sub-update-fn sub-model sub-msg msg-tagger #_(make-tagger-fn msg-tagger))
+    (let [[sub-model' effects] (step sub-update-fn sub-model sub-msg msg-tagger)
           model' (write sub-model-lens model sub-model')]
       (if (empty? effects)
         model'
@@ -270,6 +280,17 @@
     (do
       (log "!! missed forward !!")
       model)))
+
+(defn forward-to-component [model component-lens sub-msg msg-tagger]
+  (if-let [component (read component-lens model)]
+    (let [component-model (:model component)
+          component-update-fn (:update component)]
+      (let [[component-model' effects] (step component-update-fn component-model sub-msg msg-tagger)
+            model' (write component-lens model (assoc component :model component-model'))]
+        (if (empty? effects)
+          model'
+          (apply with-fx model' effects))))
+    model))
 
 (defn -tag-dispatch [dispatch tagger]
   (fn [msg]
