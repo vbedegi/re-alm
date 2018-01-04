@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
+## [0.3.7]
+### Added
+- http/delete-fx
+- storage/storage-cofx
+- browser/path-cofx
+- ability to dispatch a start-up message to the root component
+- forward-to-component and forward-subs-to-component
+
 ## [0.3.6]
 ### Fixed
 - initial subscriptions did not work, fixed
