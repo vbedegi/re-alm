@@ -11,9 +11,17 @@ You want to build SPAs the simplest way possible, using nothing, but pure, compo
 
 ## Usage
 
-Start a new project: `lein new re-alm my-project`
+Start a new project:
 
+`lein new re-alm <project-name>`
 
+You can also add Webpack support, so You can easily use npm modules
+
+`lein new re-alm <project-name> +webpack`
+
+## Basic usage
+
+The simples component I can came up with:
 
 ```clojure
 (defn init-counter []
